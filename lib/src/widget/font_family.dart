@@ -5,8 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 class FontFamily extends StatefulWidget {
   final List<FontFamilyModel> fonts;
+  bool showLoading;
 
-  FontFamily(this.fonts);
+  FontFamily(this.fonts, this.showLoading);
 
   @override
   _FontFamilyState createState() => _FontFamilyState();
@@ -20,8 +21,8 @@ class _FontFamilyState extends State<FontFamily> {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: widget.fonts
-              .map((fontModel) =>
-                  _FontFamilyPicker(fontModel.font, fontModel.isSelected))
+              .map((fontModel) => _FontFamilyPicker(
+                  fontModel.font, fontModel.isSelected, widget.showLoading))
               .toList(),
         ),
       ),
@@ -32,33 +33,49 @@ class _FontFamilyState extends State<FontFamily> {
 class _FontFamilyPicker extends StatelessWidget {
   final String font;
   final bool isSelected;
+  bool showLoading;
 
-  _FontFamilyPicker(this.font, this.isSelected);
+  _FontFamilyPicker(this.font, this.isSelected, this.showLoading);
 
   @override
   Widget build(BuildContext context) {
     FontOptionModel fontOptionModel =
         Provider.of<FontOptionModel>(context, listen: false);
-    return GestureDetector(
-      onTap: () => fontOptionModel.selectFontFamily(font),
-      child: Container(
-        width: 40,
-        height: 40,
-        margin: EdgeInsets.only(right: 7),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(100),
-          color: isSelected ? Colors.white : Colors.black45,
-        ),
-        child: Center(
-          child: Text(
-            'Aa',
-            style: GoogleFonts.getFont(
-              font,
-              color: isSelected ? Colors.orange : Colors.white,
+    return Stack(
+      children: [
+        GestureDetector(
+          onTap: () => fontOptionModel.selectFontFamily(font),
+          child: Container(
+            width: 40,
+            height: 40,
+            margin: EdgeInsets.only(right: 7),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(100),
+              color: isSelected ? Colors.white : Colors.black45,
+            ),
+            child: Center(
+              child: Text(
+                'Aa',
+                style: GoogleFonts.getFont(
+                  font,
+                  color: isSelected ? Colors.orange : Colors.white,
+                ),
+              ),
             ),
           ),
         ),
-      ),
+        showLoading
+            ? Container(
+                width: 40,
+                height: 40,
+                margin: EdgeInsets.only(right: 7),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  color: isSelected ? Colors.white : Colors.black,
+                ),
+              )
+            : Container()
+      ],
     );
   }
 }
